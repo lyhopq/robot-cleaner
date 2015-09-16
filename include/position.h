@@ -6,16 +6,16 @@
 class Position
 {
 public:
-    Position(int x, int y, const Orientation&);
+    Position(int x, int y, const Orientation &);
     bool turn(bool left);
     bool move(bool forword);
-    
-    bool operator ==(const Position &other) const;
+
+    bool operator==(const Position &other) const;
 
     static void setLimit(int x, int y)
     {
-    	xlimit = x;
-    	ylimit = y;
+        xlimit = x;
+        ylimit = y;
     }
 
 private:
@@ -26,6 +26,5 @@ private:
     int y;
     Orientation orientation;
 };
-
 
 #endif

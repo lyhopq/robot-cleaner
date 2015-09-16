@@ -8,11 +8,11 @@ class RobotCleaner
 {
 public:
     RobotCleaner();
-    
+
     Position getPosition() const;
     void setPosition(Position pos);
-    
-    void exec(Instruction* ins);
+
+    void exec(Instruction *ins);
 
 private:
     Position position;

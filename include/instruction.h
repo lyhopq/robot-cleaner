@@ -3,23 +3,23 @@
 
 #include <initializer_list>
 
-class Position;
+class RobotCleaner;
 
 struct Instruction
 {
-    virtual bool exec(Position &pos) const = 0;
+    virtual bool exec(RobotCleaner &robot) const = 0;
     virtual ~Instruction() {}
 };
 
 Instruction *left();
 Instruction *right();
-Instruction *forword(int step=1);
-Instruction *backword(int step=1);
+Instruction *forword(int step = 1);
+Instruction *backword(int step = 1);
 Instruction *round();
 
-Instruction* _sequential(std::initializer_list<Instruction*>);
-#define sequential(...) _sequential({ __VA_ARGS__ })
+Instruction *_sequential(std::initializer_list<Instruction *>);
+#define sequential(...) _sequential({__VA_ARGS__})
 
-Instruction *repeat(Instruction*, int);
+Instruction *repeat(Instruction *, int);
 
 #endif
