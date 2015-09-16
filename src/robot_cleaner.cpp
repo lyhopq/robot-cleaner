@@ -1,7 +1,5 @@
 #include "robot_cleaner.h"
 
-using namespace std;
-
 RobotCleaner::RobotCleaner()
     :position(Position(0, 0, NORTH))
 {
@@ -16,4 +14,9 @@ void RobotCleaner::exec(Instruction* ins)
 {
     ins->exec(position);
     delete ins;
+}
+
+void RobotCleaner::setPosition(Position pos)
+{
+	position = pos;
 }

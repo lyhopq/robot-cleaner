@@ -7,7 +7,8 @@ class Position;
 
 struct Instruction
 {
-    virtual void exec(Position &pos) = 0;
+    virtual bool exec(Position &pos) const = 0;
+    virtual ~Instruction() {}
 };
 
 Instruction *left();

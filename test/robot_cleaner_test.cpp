@@ -7,6 +7,7 @@ protected:
     virtual void SetUp()
     {
         robot = new RobotCleaner;
+        Position::setLimit(6, 6);
     }
     virtual void TearDown()
     {
@@ -155,4 +156,29 @@ TEST_F(RobotCleanerTest, repeat_instruction2)
 			repeat(forword(2), 2)
 	));
     ASSERT_EQ(robot->getPosition(), Position(5, 0, EAST));
+}
+
+TEST_F(RobotCleanerTest, enter_safeguard_state)
+{
+	robot->setPosition(Position(6, 6, NORTH));
+	robot->exec(forword());
+    ASSERT_EQ(robot->getPosition(), Position(6, 5, SOUTH));
+}
+
+
+TEST_F(RobotCleanerTest, enter_safeguard_state_repeat)
+{
+	robot->setPosition(Position(6, 6, NORTH));
+	robot->exec(forword(3));
+    ASSERT_EQ(robot->getPosition(), Position(6, 3, SOUTH));
+}
+
+TEST_F(RobotCleanerTest, enter_safeguard_state_sequential)
+{
+	robot->setPosition(Position(6, 6, NORTH));
+	robot->exec(sequential(
+			forword(),
+			left(),
+			forword()));
+    ASSERT_EQ(robot->getPosition(), Position(6, 4, SOUTH));
 }

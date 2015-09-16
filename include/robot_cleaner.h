@@ -10,6 +10,7 @@ public:
     RobotCleaner();
     
     Position getPosition() const;
+    void setPosition(Position pos);
     
     void exec(Instruction* ins);
 

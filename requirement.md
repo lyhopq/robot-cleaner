@@ -49,6 +49,6 @@ Robot收到REAPT(instruction, n) 指令后，它会循环执行instruction指令
 例如：原来在(1, 0, E)，执行REAPT(FORWARD(2), 2)指令后，新的位置为(5, 0,E)。
 
 ## 需求七
-当Robot尝试执行指令时，如果超出指定坐标系的范围，则Robot进入保护模式，它会一直尝试执行[LEFT, FORWARD]，直到成功为止；
+当Robot尝试执行指令时，如果超出指定坐标系的范围，则Robot进入保护模式，它会一直尝试执行[RIGHT, FORWARD]，直到成功为止；
 例如：坐标范围为[6,6]，当原来的位置为(6,6,N)时，执行FORWARD指令，尝试失败，进入保护模式；
-尝试第一次[LEFT, FORWARD]指令，依然失败；再尝试一次[LEFT, FORWARD]，尝试成功，新位置为(6,5,S)。
+尝试第一次[RIGHT, FORWARD]指令，依然失败；再尝试一次[RIGHT, FORWARD]，尝试成功，新位置为(6,5,S)。

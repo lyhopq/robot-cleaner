@@ -19,4 +19,4 @@ clean :
 	rm -f $(OBJS)
 
 $(EXECUTABLE) : $(OBJS)
-	$(CC) -o $(EXECUTABLE) $(OBJS) $(addprefix -l,$(LIBS))
+	$(CC) $(CPPFLAGS) -o $(EXECUTABLE) $(OBJS) $(addprefix -l,$(LIBS))

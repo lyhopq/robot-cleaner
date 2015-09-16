@@ -1,8 +1,11 @@
 #include "instruction.h"
 #include "position.h"
+#include <memory>
 
 const int MIN_MOVE_STEP = 1;
 const int MAX_MOVE_STEP = 10;
+
+struct SafeguardDecorator;
 
 struct TurnInstruction: Instruction
 {
@@ -11,9 +14,9 @@ struct TurnInstruction: Instruction
 		left = _left;
     }
 
-    void exec(Position &pos)
+    bool exec(Position &pos) const
     {
-        pos.turn(left);
+        return pos.turn(left);
     }
 private:
     bool left;
@@ -26,9 +29,9 @@ struct MoveInstruction: Instruction
 		forword = _forword;
     }
 
-    void exec(Position &pos)
+    bool exec(Position &pos) const
     {
-    	pos.move(forword);
+    	return pos.move(forword);
     }
 private:
     bool forword;
@@ -40,22 +43,19 @@ struct RepeatInstruction: Instruction
 		: instruction(instruction), times(times)
 	{}
 
-	void exec(Position &pos)
+    bool exec(Position &pos) const
 	{
-		for(int i = 0; i < times; ++i)
+		bool ok = true;
+		for(int i = 0; ok && i < times; ++i)
 		{
-			instruction->exec(pos);
+			ok = instruction->exec(pos);
 		}
-	}
 
-	~RepeatInstruction()
-	{
-		delete instruction;
+		return ok;
 	}
-
 
 private:
-	Instruction *instruction;
+	std::unique_ptr<Instruction> instruction;
 	int times;
 };
 
@@ -65,12 +65,19 @@ struct SequentialInstruction: Instruction
 		: instructions(instructions)
 	{}
 
-	void exec(Position &pos)
+    bool exec(Position &pos) const
 	{
+		bool ok = true;
 		for(auto ins : instructions)
 		{
-			ins->exec(pos);
+			if(!ok)
+			{
+				break;
+			}
+			ok = ins->exec(pos);
 		}
+
+		return ok;
 	}
 
 	~SequentialInstruction()
@@ -87,7 +94,7 @@ private:
 };
 
 struct ErrorInstruction: Instruction {
-	void exec(Position &pos) {}
+	bool exec(Position &pos) const {return true;}
 };
 
 #define OUTSIDE_RANG(value) \
@@ -95,6 +102,7 @@ struct ErrorInstruction: Instruction {
 		if(value < MIN_MOVE_STEP || value > MAX_MOVE_STEP) \
 			return new ErrorInstruction; \
 	} while(0)
+
 
 Instruction *left()
 {
@@ -112,16 +120,39 @@ Instruction *repeat(Instruction* instruction, int times)
 	return new RepeatInstruction(instruction, times);
 }
 
+Instruction *forword(int step);
+
+struct SafeguardDecorator:Instruction
+{
+	SafeguardDecorator(MoveInstruction *instruction)
+		:instruction(instruction)
+	{}
+
+    bool exec(Position &pos) const
+	{
+		if(!instruction->exec(pos))
+		{
+			right()->exec(pos);
+			return forword()->exec(pos);
+		}
+		return true;
+	}
+
+protected:
+	std::unique_ptr<MoveInstruction> instruction;
+};
+
+
 Instruction *forword(int step)
 {
 	OUTSIDE_RANG(step);
-    return repeat(new MoveInstruction(true), step);
+    return repeat(new SafeguardDecorator(new MoveInstruction(true)), step);
 }
 
 Instruction *backword(int step)
 {
 	OUTSIDE_RANG(step);
-    return repeat(new MoveInstruction(false), step);
+    return repeat(new SafeguardDecorator(new MoveInstruction(false)), step);
 }
 
 Instruction *round()
@@ -133,4 +164,3 @@ Instruction *_sequential(std::initializer_list<Instruction*> instructions)
 {
 	return new SequentialInstruction(instructions);
 }
-
